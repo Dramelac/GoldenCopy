@@ -1,7 +1,31 @@
 # GoldenCopy
 
-Copy the properties and groups of a user from neo4j to create an
-identical golden ticket
+You encounter limitations with your golden tickets (DACLs, detection)? 
+GoldenCopy retrieves all the information (ID, groups, etc) of a specific user in a neo4j database (bloodhound) and prepares the mimikatz/ticketer command to impersonate his permissions.
+
+### Examples
+
+- Impersonating 'john@domain.local' using default localhost neo4j (neo4j/exegol4thewin) database:
+```
+goldencopy.py john@domain.local
+```
+- Custom neo4j DB:
+```
+goldencopy.py -b neo4j.server.local -u neo4juser -p neo4jpass john@domain.local
+```
+- Adding stealth mode:
+```
+goldencopy.py -b bolt://neo4j.server.local:7687 -u neo4juser -p neo4jpass -s john@domain.local
+```
+- Using specific tools:
+```
+goldencopy.py -t mimikatz john@domain.local
+```
+```
+goldencopy.py -t ticketer john@domain.local
+```
+
+### Usages
 
 ```
 usage: goldencopy.py [-h] [-v] [-b BOLT] [-u USERNAME] [-p PASSWORD]
@@ -41,25 +65,4 @@ Advanced ticket configuration:
                         separated by commas)
   -c CUSTOM, --custom CUSTOM
                         Custom options
-```
-
-Exemples:
-- Using default localhost neo4j (neo4j/neo4j) database:
-```
-goldencopy.py john@domain.local
-```
-- Custom neo4j DB:
-```
-goldencopy.py -b neo4j.server.local -u neo4juser -p neo4jpass john@domain.local
-```
-- Adding stealth mode:
-```
-goldencopy.py -b bolt://neo4j.server.local:7687 -u neo4juser -p neo4jpass -s john@domain.local
-```
-- Specific tools:
-```
-goldencopy.py -t mimikatz john@domain.local
-```
-```
-goldencopy.py -t ticketer john@domain.local
 ```
