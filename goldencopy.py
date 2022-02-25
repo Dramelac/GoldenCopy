@@ -5,10 +5,12 @@ import re
 
 from py2neo import Graph
 
+version = '1.0'
+
 
 def args_parser():
     parser = argparse.ArgumentParser(
-        description="GoldenCopy - Copy the properties and groups of a user from neo4j to create an identical golden ticket")
+        description=f"GoldenCopy v{version} - Copy the properties and groups of a user from neo4j to create an identical golden ticket")
     # Logging config
     parser.add_argument('-v', '--verbose', action="count", default=0, dest="verbosity", help="Enable verbose logging")
     # Neo4j connexion config
@@ -16,7 +18,8 @@ def args_parser():
     neo4j_group.add_argument('-b', '--bolt', type=str, default="bolt://127.0.0.1:7687",
                              help="Neo4j bolt connexion (default: bolt://127.0.0.1:7687)")
     neo4j_group.add_argument('-u', '--username', type=str, default="neo4j", help="Neo4j username (default : neo4j)")
-    neo4j_group.add_argument('-p', '--password', type=str, default="exegol4thewin", help="Neo4j password (default : exegol4thewin)")
+    neo4j_group.add_argument('-p', '--password', type=str, default="exegol4thewin",
+                             help="Neo4j password (default : exegol4thewin)")
     # Ticket generations options
     ticket_group = parser.add_argument_group("Ticket configuration")
     ticket_group.add_argument('-t', '--tools', type=str, choices=["mimikatz", "ticketer", "all"], default="all",
@@ -217,13 +220,9 @@ def forgeTicket(user, groups):
 
 
 def main():
-    g = getNeo4jConnection()
-    user = findUser(g)
-    groups = findGroupFromUser(g, user)
-    forgeTicket(user, groups)
-
-
-if __name__ == '__main__':
+    # init
+    global args
+    global logger
     args = args_parser()
     logging.basicConfig(format="%(message)s")
     logger = logging.getLogger()
@@ -233,4 +232,13 @@ if __name__ == '__main__':
         logger.setLevel(logging.INFO)
     else:
         logger.setLevel(logging.DEBUG)
+    # process
+    logger.warning(f"GoldenCopy v{version}")
+    g = getNeo4jConnection()
+    user = findUser(g)
+    groups = findGroupFromUser(g, user)
+    forgeTicket(user, groups)
+
+
+if __name__ == '__main__':
     main()

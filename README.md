@@ -24,7 +24,7 @@ Neo4j connection configuration:
   -u USERNAME, --username USERNAME
                         Neo4j username (default : neo4j)
   -p PASSWORD, --password PASSWORD
-                        Neo4j password (default : neo4j)
+                        Neo4j password (default : exegol4thewin)
 
 Ticket configuration:
   -t {mimikatz,ticketer,all}, --tools {mimikatz,ticketer,all}
