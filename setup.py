@@ -17,7 +17,16 @@ setup(
     long_description_content_type='text/markdown',
     python_requires='>=3.6, <4',
     url='https://github.com/Dramelac/GoldenCopy',
-    keywords='pentest redteam goldenticket',
+    keywords='pentest redteam goldenticket goldencopy',
+    classifiers=(
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "License :: OSI Approved :: GNU License",
+        "Operating System :: OS Independent",
+    ),
     install_requires=[
           'py2neo>=2021.2.3',
       ],

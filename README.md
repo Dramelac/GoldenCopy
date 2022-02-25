@@ -3,7 +3,23 @@
 You encounter limitations with your golden tickets (DACLs, detection)? 
 GoldenCopy retrieves all the information (ID, groups, etc) of a specific user in a neo4j database (bloodhound) and prepares the mimikatz/ticketer command to impersonate his permissions.
 
-### Examples
+## Installation
+
+**GoldenCopy** works with python >= 3.6
+
+### Using pip
+```bash
+python3 -m pip install GoldenCopy
+```
+
+### From source
+```bash
+git clone https://github.com/Dramelac/GoldenCopy.git
+cd GoldenCopy
+python3 setup.py install
+```
+
+## Examples
 
 - Impersonating 'john@domain.local' using default localhost neo4j (neo4j/exegol4thewin) database:
 ```
@@ -25,7 +41,7 @@ goldencopy.py -t mimikatz john@domain.local
 goldencopy.py -t ticketer john@domain.local
 ```
 
-### Usages
+## Usages
 
 ```
 usage: goldencopy.py [-h] [-v] [-b BOLT] [-u USERNAME] [-p PASSWORD]
