@@ -5,7 +5,7 @@ import re
 
 from py2neo import Graph
 
-version = '1.0'
+version = '1.1'
 
 
 def args_parser():
