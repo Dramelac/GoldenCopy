@@ -22,23 +22,23 @@ python3 setup.py install
 ## Examples
 
 - Impersonating 'john@domain.local' using default localhost neo4j (neo4j/exegol4thewin) database:
-```
-goldencopy.py john@domain.local
+```bash
+goldencopy john@domain.local
 ```
 - Custom neo4j DB:
-```
-goldencopy.py -b neo4j.server.local -u neo4juser -p neo4jpass john@domain.local
+```bash
+goldencopy -b neo4j.server.local -u neo4juser -p neo4jpass john@domain.local
 ```
 - Adding stealth mode:
-```
-goldencopy.py -b bolt://neo4j.server.local:7687 -u neo4juser -p neo4jpass -s john@domain.local
+```bash
+goldencopy -b bolt://neo4j.server.local:7687 -u neo4juser -p neo4jpass -s john@domain.local
 ```
 - Using specific tools:
+```bash
+goldencopy -t mimikatz john@domain.local
 ```
-goldencopy.py -t mimikatz john@domain.local
-```
-```
-goldencopy.py -t ticketer john@domain.local
+```bash
+goldencopy -t ticketer john@domain.local
 ```
 
 ## Usages
