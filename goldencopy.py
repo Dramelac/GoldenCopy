@@ -16,7 +16,7 @@ def args_parser():
     neo4j_group.add_argument('-b', '--bolt', type=str, default="bolt://127.0.0.1:7687",
                              help="Neo4j bolt connexion (default: bolt://127.0.0.1:7687)")
     neo4j_group.add_argument('-u', '--username', type=str, default="neo4j", help="Neo4j username (default : neo4j)")
-    neo4j_group.add_argument('-p', '--password', type=str, default="neo4j", help="Neo4j password (default : neo4j)")
+    neo4j_group.add_argument('-p', '--password', type=str, default="exegol4thewin", help="Neo4j password (default : exegol4thewin)")
     # Ticket generations options
     ticket_group = parser.add_argument_group("Ticket configuration")
     ticket_group.add_argument('-t', '--tools', type=str, choices=["mimikatz", "ticketer", "all"], default="all",
