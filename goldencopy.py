@@ -3,7 +3,7 @@ import argparse
 import logging
 import re
 
-__version__ = '1.2'
+__version__ = '1.3'
 
 
 def args_parser():
@@ -33,7 +33,7 @@ def args_parser():
                                 help="Manually add extra sids (SID history) (can be separated by commas)")
     advanced_group.add_argument('-c', '--custom', type=str, default="", help="Custom options")
     # Targeted user
-    parser.add_argument('target_user', type=str, help="Target user to copy (format: <username>[@<domain>] or SID)")
+    parser.add_argument('target_object', type=str, help="Target user or computer to copy (format: <username>[@<domain>] or <computer>$[@<domain>] or SID)")
     return parser.parse_args()
 
 
@@ -62,18 +62,15 @@ def getNeo4jConnection():
 
 class User:
     # Data class from neo4j returned User object to python object
-    def __init__(self, user):
-        self.fulluser = user[0]
+    def __init__(self, obj, type):
+        self.fulluser = obj[0]
         self.username = self.fulluser.split('@')[0]
-        self.domain = user[1]
-        self.object_id = user[2]
+        self.domain = obj[1]
+        self.object_id = obj[2]
         self.user_id = self.object_id.split('-')[-1]
         self.domain_id = '-'.join(self.object_id.split('-')[:-1])
-        self.sidhistory = user[3]
-
-
-class Computer(User):
-    pass
+        self.sidhistory = obj[3]
+        self.type = type
 
 
 class Group:
@@ -87,23 +84,26 @@ class Group:
 
 
 def findUser(g):
-    if args.target_user.lower().endswith("$"):
-        args.target_user = args.target_user[:-1]
+    if args.target_object.endswith("$"):
+        # Detect computer object and remove '$' char
+        args.target_object = args.target_object[:-1]
         object_type = "Computer"
     else:
         object_type = "User"
-    if args.target_user.lower().startswith("s-1-5-21-"):
+    if args.target_object.lower().startswith("s-1-5-21-"):
         # SID mode
         logger.debug("Search user in SID mode")
         context = "objectid"
-        match_test = f'(?i){args.target_user}'
+        match_test = f'(?i){args.target_object}'
+        # In SID mode, any object can be matched (expect user to manually select an appropriate object)
+        object_type = "Base"
     else:
         # Classic username mode
         context = "name"
-        match_test = f'(?i).*{args.target_user}.*'
+        match_test = f'(?i).*{args.target_object}.*'
     req = g.run(f"""MATCH (u:{object_type}) 
     WHERE u.{context} =~ '{match_test}'
-    RETURN u.name, u.domain, u.objectid, u.sidhistory
+    RETURN u.name, u.domain, u.objectid, u.sidhistory, u
     ORDER BY u.enabled DESC,u.name""").to_table()
     user_count = len(req)
     if user_count == 0:
@@ -114,15 +114,11 @@ def findUser(g):
         # TODO multiple users found
         logger.warning(req)
         logger.warning(f"Using {req[0][0]}")
-    if object_type == "User":
-        return User(req[0])
-    else:
-        return Computer(req[0])
+    return User(req[0], object_type)
 
 
 def findGroupFromObj(g, obj):
-    obj_type = "Computer" if type(obj) is Computer else "User"
-    req = g.run(f"""MATCH (m:{obj_type} 
+    req = g.run(f"""MATCH (m:{obj.type} 
     {{objectid: "{obj.object_id}"}}), (n:Group), p=(m)-[:MemberOf]->(n) 
     RETURN n.name, n.domain, n.objectid""")
     data = req.to_table()
