@@ -1,5 +1,5 @@
-from setuptools import setup, find_packages
-from goldencopy import version
+from setuptools import setup
+from goldencopy import __version__
 import pathlib
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -9,7 +9,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='GoldenCopy',
-    version=version,
+    version=__version__,
     license='GNU',
     author="Dramelac",
     author_email='dramelac@pm.me',
@@ -29,7 +29,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-          'py2neo>=2021.2.3',
+          'py2neo>=2021.2.3'
       ],
     py_modules=["goldencopy"],
     entry_points={

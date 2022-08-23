@@ -3,14 +3,12 @@ import argparse
 import logging
 import re
 
-from py2neo import Graph
-
-version = '1.2'
+__version__ = '1.2'
 
 
 def args_parser():
     parser = argparse.ArgumentParser(
-        description=f"GoldenCopy v{version} - Copy the properties and groups of a user from neo4j to create an identical golden ticket")
+        description=f"GoldenCopy v{__version__} - Copy the properties and groups of a user from neo4j to create an identical golden ticket")
     # Logging config
     parser.add_argument('-v', '--verbose', action="count", default=0, dest="verbosity", help="Enable verbose logging")
     # Neo4j connexion config
@@ -253,7 +251,7 @@ def main():
     else:
         logger.setLevel(logging.DEBUG)
     # process
-    logger.warning(f"GoldenCopy v{version}")
+    logger.warning(f"GoldenCopy v{__version__}")
     g = getNeo4jConnection()
     user = findUser(g)
     groups = findGroupFromObj(g, user)
@@ -261,4 +259,6 @@ def main():
 
 
 if __name__ == '__main__':
+    from py2neo import Graph
+
     main()
