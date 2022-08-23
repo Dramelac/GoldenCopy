@@ -11,6 +11,7 @@ GoldenCopy retrieves all the information (ID, groups, etc) of a specific user in
 ```bash
 python3 -m pip install GoldenCopy
 ```
+PyPi repository: https://pypi.org/project/GoldenCopy/
 
 ### From source
 ```bash
@@ -24,6 +25,10 @@ python3 setup.py install
 - Impersonating 'john@domain.local' using default localhost neo4j (neo4j/exegol4thewin) database:
 ```bash
 goldencopy john@domain.local
+```
+- Impersonating 'DC1' computer using default database connection:
+```bash
+goldencopy 'DC1$'
 ```
 - Custom neo4j DB:
 ```bash

