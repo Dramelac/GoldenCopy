@@ -1,9 +1,10 @@
 #!/usr/bin/python3
+from py2neo import Graph
 import argparse
 import logging
 import re
 
-__version__ = '1.3'
+__version__ = '1.3.3'
 
 
 def args_parser():
@@ -103,7 +104,7 @@ def findUser(g):
         match_test = f'(?i).*{args.target_object}.*'
     req = g.run(f"""MATCH (u:{object_type}) 
     WHERE u.{context} =~ '{match_test}'
-    RETURN u.name, u.domain, u.objectid, u.sidhistory, u
+    RETURN u.name, u.domain, u.objectid, u.sidhistory
     ORDER BY u.enabled DESC,u.name""").to_table()
     user_count = len(req)
     if user_count == 0:
@@ -255,6 +256,4 @@ def main():
 
 
 if __name__ == '__main__':
-    from py2neo import Graph
-
     main()
