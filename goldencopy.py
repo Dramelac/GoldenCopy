@@ -4,7 +4,7 @@ import argparse
 import logging
 import re
 
-__version__ = '1.3.3'
+__version__ = '1.3.4'
 
 
 def args_parser():
@@ -65,7 +65,10 @@ class User:
     # Data class from neo4j returned User object to python object
     def __init__(self, obj, type):
         self.fulluser = obj[0]
-        self.username = self.fulluser.split('@')[0]
+        if '@' in self.fulluser:
+            self.username = self.fulluser.split('@')[0]
+        else:
+            self.username = self.fulluser.split('.')[0]+"$"
         self.domain = obj[1]
         self.object_id = obj[2]
         self.user_id = self.object_id.split('-')[-1]
@@ -216,8 +219,8 @@ def goldenTicketer(user, groups):
         logger.warning("WARNING: default ticketer duration use days and not hours, you should fix your tools ! "
                        "(stealth require 10 hours tickets)")
         cmd += f"-duration 10 "
-    cmd += user.username
-    cmd += f" && export KRB5CCNAME=$(pwd)/{user.username}.ccache"
+    cmd += "'"+user.username+"'"
+    cmd += f" && export KRB5CCNAME=$(pwd)/'{user.username}.ccache'"
     print(cmd)
     print()
     return cmd
