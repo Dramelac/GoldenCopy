@@ -29,7 +29,7 @@ setup(
     ],
     install_requires=[
       'py2neo @ git+https://github.com/elena/py2neo@master',
-    ]
+    ],
     py_modules=["goldencopy"],
     entry_points={
     'console_scripts': [
