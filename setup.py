@@ -8,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='GoldenCopy',
-    version="1.3.4",
+    version="1.3.5",
     license='GNU',
     author="Dramelac",
     author_email='dramelac@pm.me',
@@ -28,8 +28,8 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-          'py2neo>=2021.2.3'
-      ],
+      'py2neo @ git+https://github.com/elena/py2neo@master',
+    ],
     py_modules=["goldencopy"],
     entry_points={
     'console_scripts': [
