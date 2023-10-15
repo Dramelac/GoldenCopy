@@ -8,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='GoldenCopy',
-    version="1.3.4",
+    version="1.3.5",
     license='GNU',
     author="Dramelac",
     author_email='dramelac@pm.me',
