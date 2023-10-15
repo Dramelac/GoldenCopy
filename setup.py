@@ -28,8 +28,8 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-          'py2neo>=2021.2.3'
-      ],
+      'py2neo @ git+https://github.com/elena/py2neo@master',
+    ]
     py_modules=["goldencopy"],
     entry_points={
     'console_scripts': [
