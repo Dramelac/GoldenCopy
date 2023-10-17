@@ -1,5 +1,4 @@
 from setuptools import setup
-from goldencopy import __version__
 import pathlib
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -9,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='GoldenCopy',
-    version=__version__,
+    version='1.5',
     license='GNU',
     author="Dramelac",
     author_email='dramelac@pm.me',
