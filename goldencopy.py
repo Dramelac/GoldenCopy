@@ -6,7 +6,7 @@ import argparse
 import logging
 import re
 
-__version__ = '1.3.5'
+__version__ = '1.5'
 
 
 def args_parser():
