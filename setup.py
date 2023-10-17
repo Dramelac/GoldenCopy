@@ -29,14 +29,14 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-      'py2neo @ git+https://github.com/elena/py2neo@master',
+        'py2neo @ git+https://github.com/elena/py2neo@master',
     ],
     py_modules=["goldencopy"],
     entry_points={
-    'console_scripts': [
-        'goldencopy=goldencopy:main',
-    ],
-},
+        'console_scripts': [
+            'goldencopy=goldencopy:main',
+        ],
+    },
 
     project_urls={
         'Bug Reports': 'https://github.com/Dramelac/GoldenCopy/issues',
