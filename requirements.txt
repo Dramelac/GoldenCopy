@@ -1,1 +1,1 @@
-py2neo @ git+https://github.com/elena/py2neo@master
+py2neo>=2021.2.4
