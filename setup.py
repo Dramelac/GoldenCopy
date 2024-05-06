@@ -30,7 +30,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        'py2neo>=2021.2.4,
+        'py2neo>=2021.2.4',
     ],
     py_modules=["goldencopy"],
     entry_points={
